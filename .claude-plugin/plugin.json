@@ -1,8 +1,10 @@
 {
   "name": "app-standards",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Audit and fix any app against our Syntrix tracking, Stripe payment, Stripe metadata and CRM integration standard; answer Syntrix how-to questions, debug missing events and draft Syntrix report configs.",
   "author": {
     "name": "Bhaskar"
-  }
+  },
+  "homepage": "https://github.com/Koonei-ctrl/app-standards",
+  "repository": "https://github.com/Koonei-ctrl/app-standards"
 }

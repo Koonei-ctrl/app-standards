@@ -32,13 +32,13 @@ That way every app uses the same, current version of the standard.
 asks which ones you use:
 
 ```bash
-npx skills add ORG/app-standards -g
+npx skills add Koonei-ctrl/app-standards -g
 ```
 
 Install for specific tools only, without prompts:
 
 ```bash
-npx skills add ORG/app-standards -g -a claude-code -a cursor -a codex -y
+npx skills add Koonei-ctrl/app-standards -g -a claude-code -a cursor -a codex -y
 ```
 
 Agent names include `claude-code`, `codex`, `cursor`, `github-copilot`,
@@ -48,7 +48,7 @@ and `cline`. To update, run the same command again.
 ### Claude Code: plugin (gets updates)
 
 ```
-/plugin marketplace add ORG/app-standards
+/plugin marketplace add Koonei-ctrl/app-standards
 /plugin install app-standards@app-standards
 ```
 
@@ -60,7 +60,7 @@ Copy every folder under `skills/` into your tool's skills folder. Copy whole
 folders, because each skill keeps its `references/` inside it.
 
 ```bash
-git clone https://github.com/ORG/app-standards.git ~/app-standards
+git clone https://github.com/Koonei-ctrl/app-standards.git ~/app-standards
 cp -R ~/app-standards/skills/* <skills folder from the table>
 ```
 

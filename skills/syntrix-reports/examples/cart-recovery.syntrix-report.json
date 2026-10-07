@@ -1,0 +1,23 @@
+{
+  "syntrixReportExport": "v1",
+  "report": {
+    "reportType": "funnel",
+    "name": "Cart recovery re-entry",
+    "description": "Flow D: recovery link opened \u2192 re-entered checkout. Stops before purchase on purpose: nothing marks a purchase as recovered, so a purchase step would count unrelated orders.",
+    "config": {
+      "steps": [
+        {
+          "eventType": "cart_recovery_opened",
+          "label": "Recovery link opened"
+        },
+        {
+          "eventType": "begin_recovery_checkout",
+          "label": "Re-entered checkout"
+        }
+      ],
+      "groupBy": "identity",
+      "timeWindowHours": 168
+    },
+    "templateId": null
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "syntrixReportExport": "v1",
+  "report": {
+    "reportType": "funnel",
+    "name": "Offer page to purchase",
+    "description": "Flow B: visit \u2192 email submitted at checkout \u2192 paid.",
+    "config": {
+      "steps": [
+        {
+          "eventType": "custom:session_start",
+          "label": "Visit"
+        },
+        {
+          "eventType": "begin_checkout",
+          "label": "Started checkout"
+        },
+        {
+          "eventType": "purchase",
+          "label": "Purchased"
+        }
+      ],
+      "groupBy": "session",
+      "timeWindowHours": null,
+      "breakdown": "utm_source"
+    },
+    "templateId": null
+  }
+}

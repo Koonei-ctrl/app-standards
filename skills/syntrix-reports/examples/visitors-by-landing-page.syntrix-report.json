@@ -1,0 +1,17 @@
+{
+  "syntrixReportExport": "v1",
+  "report": {
+    "reportType": "metric",
+    "name": "Visitors by landing page",
+    "description": "Unique visitors per entry page over the chosen range (query strings stripped).",
+    "config": {
+      "metric": "unique_visitors",
+      "dimension": "landing_page",
+      "granularity": "all",
+      "viz": "table",
+      "filters": [],
+      "dimensionLimit": 20
+    },
+    "templateId": null
+  }
+}

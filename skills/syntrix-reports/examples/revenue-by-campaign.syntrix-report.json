@@ -1,0 +1,16 @@
+{
+  "syntrixReportExport": "v1",
+  "report": {
+    "reportType": "attribution",
+    "name": "Revenue by campaign (last touch)",
+    "description": "Purchase revenue credited to the last campaign before the order. Attribution skips duplicate purchase copies, unlike metric reports.",
+    "config": {
+      "conversionEvent": "purchase",
+      "model": "last_touch",
+      "metric": "revenue",
+      "dimension": "utm_campaign",
+      "limit": 20
+    },
+    "templateId": null
+  }
+}

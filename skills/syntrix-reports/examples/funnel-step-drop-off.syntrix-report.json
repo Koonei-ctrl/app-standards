@@ -1,0 +1,83 @@
+{
+  "syntrixReportExport": "v1",
+  "report": {
+    "reportType": "funnel",
+    "name": "Funnel step drop-off",
+    "description": "Which funnel step people abandon. One step per funnel_step_completed `step`; edit the list to the steps everyone sees (leave out branch-only steps).",
+    "config": {
+      "steps": [
+        {
+          "eventType": "custom:funnel_started",
+          "label": "Started"
+        },
+        {
+          "eventType": "custom:funnel_step_completed",
+          "label": "Step 1",
+          "filters": [
+            {
+              "field": "custom_data",
+              "key": "step",
+              "op": "eq",
+              "value": "1"
+            }
+          ]
+        },
+        {
+          "eventType": "custom:funnel_step_completed",
+          "label": "Step 2",
+          "filters": [
+            {
+              "field": "custom_data",
+              "key": "step",
+              "op": "eq",
+              "value": "2"
+            }
+          ]
+        },
+        {
+          "eventType": "custom:funnel_step_completed",
+          "label": "Step 3",
+          "filters": [
+            {
+              "field": "custom_data",
+              "key": "step",
+              "op": "eq",
+              "value": "3"
+            }
+          ]
+        },
+        {
+          "eventType": "custom:funnel_step_completed",
+          "label": "Step 4",
+          "filters": [
+            {
+              "field": "custom_data",
+              "key": "step",
+              "op": "eq",
+              "value": "4"
+            }
+          ]
+        },
+        {
+          "eventType": "custom:funnel_step_completed",
+          "label": "Step 5",
+          "filters": [
+            {
+              "field": "custom_data",
+              "key": "step",
+              "op": "eq",
+              "value": "5"
+            }
+          ]
+        },
+        {
+          "eventType": "custom:funnel_completed",
+          "label": "Completed"
+        }
+      ],
+      "groupBy": "session",
+      "timeWindowHours": null
+    },
+    "templateId": null
+  }
+}

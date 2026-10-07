@@ -1,0 +1,36 @@
+{
+  "syntrixReportExport": "v1",
+  "report": {
+    "reportType": "funnel",
+    "name": "Funnel to purchase",
+    "description": "Flow A: which phase loses people \u2014 funnel, paywall or payment. Needs a tracked (neutral-URL) funnel; otherwise use offer-page-to-purchase.",
+    "config": {
+      "steps": [
+        {
+          "eventType": "custom:funnel_started",
+          "label": "Funnel started"
+        },
+        {
+          "eventType": "generate_lead",
+          "label": "Email given"
+        },
+        {
+          "eventType": "custom:funnel_completed",
+          "label": "Funnel completed"
+        },
+        {
+          "eventType": "begin_checkout",
+          "label": "Saw prices"
+        },
+        {
+          "eventType": "purchase",
+          "label": "Purchased"
+        }
+      ],
+      "groupBy": "session",
+      "timeWindowHours": null,
+      "breakdown": "os"
+    },
+    "templateId": null
+  }
+}

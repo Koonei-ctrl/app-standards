@@ -1,0 +1,13 @@
+{
+  "name": "app-standards",
+  "owner": {
+    "name": "Bhaskar"
+  },
+  "plugins": [
+    {
+      "name": "app-standards",
+      "source": "./",
+      "description": "Audit and fix any app against our Syntrix tracking, Stripe payment, Stripe metadata and CRM integration standard; answer Syntrix how-to questions, debug missing events and draft Syntrix report configs."
+    }
+  ]
+}

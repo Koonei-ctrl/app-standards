@@ -24,10 +24,10 @@ action is saved, and stores ids and positions, never answer text.
 | --- | --- |
 | Captures ad click ids (fbclid, gclid, ttclid…), UTMs, referrer | Define the `stxq` stub before the script (EV-12) |
 | Visitor cookie and browser id | Fire `session_start`. It is **not** automatic (EV-01) |
-| `page_view` on load and on client-side navigation | Handle consent: don't load the tracker for a visitor who refused (EV-15) |
-| Hashes email per destination | Fire the funnel, lead, checkout and purchase events |
-| Dedups `purchase` by `transaction_id` | Send the server `purchase` from the webhook |
-| Fires the browser pixels configured in the dashboard | Guard against firing an event twice |
+| `page_view` on load and on client-side navigation | Fire the funnel, lead, checkout and purchase events |
+| Hashes email per destination | Send the server `purchase` from the webhook |
+| Dedups `purchase` by `transaction_id` | Guard against firing an event twice |
+| Fires the browser pixels configured in the dashboard | |
 
 Building click-id, UTM or `_fbc`/`_fbp` capture yourself is a violation
 (EV-13). Pre-hashing email breaks matching, because Syntrix hashes it again
@@ -193,7 +193,6 @@ Content-Type: application/json
   request's own IP.
 - `sourceUrl` is a fixed, neutral constant, never a real page.
 - Don't send `eventId`. Syntrix ignores it on this path.
-- Check consent first, if the app records it.
 
 ### Responses (SX-04)
 
@@ -234,16 +233,6 @@ sequenceDiagram
   subscription id. Different ids (e.g. a session id on one side) mean double
   purchases at Meta.
 
-## Consent (EV-15)
-
-Syntrix has **no consent API**. A recorded refusal must mean:
-
-- the app doesn't render the tracker script, **and**
-- the relay doesn't send the server purchase for that buyer.
-
-The tracker fires every configured browser pixel (Meta, TikTok…) on each
-event, so consent can only be handled by not loading it.
-
 ## Where Syntrix's own guide is wrong
 
 Don't copy snippets from Syntrix's `SYNTRIX-INTEGRATION.md`. The code does
@@ -277,7 +266,6 @@ this instead:
 | EV-12 | Calls made before the script loads aren't lost (the `stxq` stub) | High |
 | EV-13 | No app-built attribution capture | Medium |
 | EV-14 | Email sent plaintext, never pre-hashed | High |
-| EV-15 | A consent refusal suppresses both browser and server events | Critical (EU) |
 | EV-16 | Product analytics is separate, never forwarded to Syntrix, stores ids and positions only | Critical |
 | SX-01 | The account's own Syntrix host; relay posts to `<host>/track/s2s` | Critical |
 | SX-02 | Browser and relay use the public key; the relay reads it from server env; the secret never reaches a client | Critical |

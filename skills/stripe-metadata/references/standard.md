@@ -52,8 +52,8 @@ session). Every server event is held ~5 minutes before processing, so the
 browser `purchase` normally lands first and wins; the first stored copy wins
 and later copies are dropped.
 
-Syntrix does **not**: create the `stxq` command stub, fire `session_start`,
-or handle consent. Those are the app's job (EV-01, EV-12, EV-15).
+Syntrix does **not** create the `stxq` command stub or fire `session_start`.
+Those are the app's job (EV-01, EV-12).
 
 ---
 
@@ -183,7 +183,6 @@ Eight keys, every value a string, missing = `""`.
 | EV-12 | Calls made before the Syntrix script finishes loading are not lost: the standard `stxq` stub is defined before any call (Syntrix drains `stxq.q` but does not create the stub), or calls wait for the script | High |
 | EV-13 | No app-built attribution capture (click ids, UTMs, `_fbc`/`_fbp`, referrer) — Syntrix does it | Medium |
 | EV-14 | Email sent plaintext to Syntrix, never pre-hashed | High |
-| EV-15 | A recorded consent refusal suppresses both browser and server Syntrix events — Syntrix has no consent API, so the app does not load the tracker and does not call the relay | Critical (EU) |
 | EV-16 | Product analytics is a separate pipeline, never forwarded to Syntrix; fires after the action is saved; stores ids/positions, never answer text | Critical |
 
 ### Syntrix configuration — SX
@@ -284,4 +283,4 @@ tracking records (`crm-contract.md` §4–6).
 | --- | --- | --- |
 | PV-01 | Stripe secret, Stripe webhook secret, Syntrix store secret, CRM product API key and CRM webhook secret never reach the browser bundle or a mobile binary, and are never logged | Critical |
 | PV-02 | Funnel answer content is never logged, error-reported or sent to any third party | Critical |
-| PV-03 | EU traffic: consent banner live and a DPA with Syntrix covering the data category | Critical (EU) |
+| PV-03 | EU traffic: a DPA with Syntrix covering the data category | Critical (EU) |

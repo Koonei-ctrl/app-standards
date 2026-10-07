@@ -49,8 +49,6 @@ else is discovered.
      tag (`syntrix-contract.md` §3); Syntrix replays it after init. Only if
      the stub can't be emitted early, wrap calls so they wait for the script
      (poll briefly, give up quietly after a timeout).
-   - **Consent (EV-15):** Syntrix has no consent API; the app decides whether
-     to render the script at all, and the relay checks the same record.
    - **Dedup (EV-01, EV-04, EV-05):** per-session guard for session/funnel
      events, permanent guard keyed on transaction id for `purchase`. Set the
      guard before firing.
@@ -70,7 +68,7 @@ else is discovered.
      never the webhook request's; a fixed neutral `sourceUrl`; no `eventId`
      (ignored). 202 = queued; retry 5xx/429/network within a total time
      budget, never 4xx; never throws into the webhook; off when the key is
-     unset. Check consent first (EV-15) if the app records consent.
+     unset.
    - **Never let tracking throw** into a payment or success flow (EV-10).
    - **Remove** app-built attribution capture (EV-13) and any forwarding of
      product analytics to Syntrix (EV-16). Do not hash email (EV-14).

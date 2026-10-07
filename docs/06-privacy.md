@@ -26,14 +26,13 @@ and never reaches ad platforms, Stripe, the CRM, logs or error reports.
 | --- | --- | --- |
 | PV-01 | The Stripe secret, Stripe webhook secret, Syntrix store secret, CRM product API key and CRM webhook secret never reach a browser bundle or mobile binary, and are never logged | Critical |
 | PV-02 | Funnel answer content is never logged, error-reported or sent to any third party | Critical |
-| PV-03 | EU traffic: consent banner live, and a DPA with Syntrix covering the data category | Critical (EU) |
+| PV-03 | EU traffic: a DPA with Syntrix covering the data category | Critical (EU) |
 
 These rules elsewhere protect the same data:
 
 - **Revealing URLs** keep the tracker out (EV-02, EV-11). See
   [Overview](01-overview.md#neutral-vs-revealing-urls).
 - **Only allowed fields** go to Syntrix (EV-09).
-- **Consent refusal** stops both browser and server events (EV-15).
 - **Product analytics** stores ids and answer positions, never answer text
   (EV-16).
 - **Stripe metadata** holds nothing sensitive (MD-04).

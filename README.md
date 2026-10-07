@@ -20,7 +20,7 @@ The standard every app follows, written to be read by people:
 | # | Document | Covers |
 | --- | --- | --- |
 | 1 | [Overview](docs/01-overview.md) | How Stripe, Syntrix and the CRM fit together; page roles; severity |
-| 2 | [Tracking (Syntrix pixel)](docs/02-tracking.md) | Tracker install, event flows A–D, allowed data, server purchase, dedup, consent |
+| 2 | [Tracking (Syntrix pixel)](docs/02-tracking.md) | Tracker install, event flows A–D, allowed data, server purchase, dedup |
 | 3 | [Payments](docs/03-payments.md) | Access via webhook only, plan types, trials, discounts, wallets |
 | 4 | [Stripe metadata](docs/04-stripe-metadata.md) | The eight keys, which object gets what, upsells |
 | 5 | [CRM integration](docs/05-crm-integration.md) | Webhook receiver, App-data endpoint, customer identity |

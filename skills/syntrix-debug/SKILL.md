@@ -23,8 +23,7 @@ operator (account / destination side).
 1. **Tracker loads** (browser events only). Network tab:
    `GET <host>/lib/stxq.min.js` → 200. Wrong host or `/lib/stxq.js` → 404.
    Script on the page? (EV-11: it must *not* be on logged-in or revealing
-   pages.) Consent: Syntrix has none — if the app gates the script on
-   consent, a refused visitor sends nothing by design.
+   pages.)
 2. **Config**: `GET <host>/track/config?id=<key>` → `success: true`. Fails
    → wrong key or host; browser pixels won't load, but `/track/e` still works.
 3. **Early calls**: `ReferenceError: stxq is not defined` in the console →
@@ -41,7 +40,7 @@ operator (account / destination side).
    - 401 → missing/wrong `X-API-Key` (must be the store's public key).
    - 500 → malformed JSON.
    - Relay never called → check the webhook handler path and dedup (EV-06),
-     the relay's "off when key unset" switch, and consent suppression.
+     and the relay's "off when key unset" switch.
 6. **Hold**: a server event appears ~5 minutes after 202 — by design. If
    checked earlier, wait and re-check.
 7. **Arrival**: the dashboard **Events** page — search the order's

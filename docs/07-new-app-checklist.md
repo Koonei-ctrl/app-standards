@@ -26,7 +26,7 @@ app`. It checks every item below and writes the report.
 - [ ] Product created in the CRM. API key generated (`crm_test_` for test)
 - [ ] CRM keys and webhook secrets are separate per environment (CI-07)
 - [ ] No secret has a public env prefix (PV-01)
-- [ ] EU traffic: consent banner and a Syntrix DPA in place (PV-03)
+- [ ] EU traffic: a Syntrix DPA in place (PV-03)
 
 ## 3. Tracking
 
@@ -45,7 +45,6 @@ app`. It checks every item below and writes the report.
 - [ ] Only allowed fields, built in one place, with a test (EV-09)
 - [ ] Tracking can't break payment (EV-10)
 - [ ] No home-made UTM or click-id capture; email not hashed (EV-13, EV-14)
-- [ ] Consent refusal stops the tracker and the relay (EV-15)
 - [ ] Product analytics is separate (EV-16)
 
 ## 4. Payments

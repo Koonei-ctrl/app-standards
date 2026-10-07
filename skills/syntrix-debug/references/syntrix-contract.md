@@ -66,8 +66,6 @@ wrong host, and wrong hold/dedup rules (see §8).
 | `stxq('debug', true \| false)` | Toggles console logging |
 
 There is **no `consent` command** and no TCF / GPC / Consent Mode handling.
-Consent must be enforced by the app: don't load the script, and don't call
-the S2S relay, for a visitor who refused (EV-15).
 
 ### What `track` sends
 
@@ -101,8 +99,7 @@ the S2S relay, for a visitor who refused (EV-15).
 - On init it calls `GET /track/config?id=<key>` and loads the browser pixels
   the merchant configured (Meta, GA4, Google Ads, TikTok, Snapchat, Bing,
   Pinterest, GTM, Klaviyo, Clarity, custom JS). Every `track` call fires them
-  too, in plaintext advanced matching — another reason consent gating is the
-  app's job.
+  too, in plaintext advanced matching.
 - No client-side dedup by `transaction_id`. Firing `purchase` twice in the
   browser sends it twice; dedup happens on the server (§5) — but apps still
   guard it (EV-05).

@@ -1,6 +1,6 @@
 ---
 name: syntrix-guide
-description: Answer how-to questions about Syntrix, our server-side ad-conversion tracker, from facts traced from its code — install snippet and stub, stxq commands, what fires automatically, browser vs server (S2S) ingest, keys and hosts, the 5-minute server hold, purchase dedup on transaction_id, event names and aliases, hashing, consent, destinations and event mappings. Use when someone asks "how does Syntrix work", "how do I send an event to Syntrix", "what's the S2S endpoint", "which key goes where", "why is my server purchase delayed", "does Syntrix dedup", "what host do I use", "can I set my own eventId", or wants to write Syntrix code outside the full `syntrix-setup` flow.
+description: Answer how-to questions about Syntrix, our server-side ad-conversion tracker, from facts traced from its code — install snippet and stub, stxq commands, what fires automatically, browser vs server (S2S) ingest, keys and hosts, the 5-minute server hold, purchase dedup on transaction_id, event names and aliases, hashing, destinations and event mappings. Use when someone asks "how does Syntrix work", "how do I send an event to Syntrix", "what's the S2S endpoint", "which key goes where", "why is my server purchase delayed", "does Syntrix dedup", "what host do I use", "can I set my own eventId", or wants to write Syntrix code outside the full `syntrix-setup` flow.
 ---
 
 # Syntrix guide
@@ -38,7 +38,7 @@ aren't showing up", `syntrix-debug`.
 4. Say what the answer **can't** guarantee: anything that depends on the
    merchant's destination config or `eventMappings` in the dashboard (an
    event missing from a destination's mappings is skipped for it), the
-   account's host, or consent setup.
+   or the account's host.
 
 ## Facts people most often get wrong
 
@@ -47,7 +47,7 @@ aren't showing up", `syntrix-debug`.
 - Every S2S event waits 5 minutes. First stored copy wins the
   `transaction_id` dedup, so the browser copy wins only if it lands within
   that hold.
-- Syntrix has no consent API and no automatic `session_start`.
+- Syntrix has no automatic `session_start`.
 - Your own `eventId` is ignored on S2S; dedup is `transaction_id`.
 - `lead` → `generate_lead` aliasing happens on the browser path only.
 - Debug is `data-debug="true"` or `stxq('debug')`, not a dashboard switch.

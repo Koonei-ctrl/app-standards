@@ -63,11 +63,11 @@ where plan type and trial length live, the webhook route(s), which Stripe
 events are handled, how entitlement/access is stored and where it is granted,
 the success page and what it does.
 
-## 5. Product analytics and consent
+## 5. Product analytics
 
 Search for the app's own event tracking (`track(`, `analytics`, `posthog`,
-`mixpanel`, `segment`, an `/events` endpoint) and consent handling (`consent`,
-cookie banner). Record whether any product event is forwarded to Syntrix.
+`mixpanel`, `segment`, an `/events` endpoint). Record whether any product
+event is forwarded to Syntrix.
 
 ## 6. Tests and CI
 

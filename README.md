@@ -13,6 +13,24 @@ Kiro and more.
 > Written for our own developers and our own stack. It's public so it's easy
 > to install anywhere. The CRM skills only work with our CRM.
 
+## Read the standard
+
+The standard every app follows, written to be read by people:
+
+| # | Document | Covers |
+| --- | --- | --- |
+| 1 | [Overview](docs/01-overview.md) | How Stripe, Syntrix and the CRM fit together; page roles; severity |
+| 2 | [Tracking (Syntrix pixel)](docs/02-tracking.md) | Tracker install, event flows A–D, allowed data, server purchase, dedup, consent |
+| 3 | [Payments](docs/03-payments.md) | Access via webhook only, plan types, trials, discounts, wallets |
+| 4 | [Stripe metadata](docs/04-stripe-metadata.md) | The eight keys, which object gets what, upsells |
+| 5 | [CRM integration](docs/05-crm-integration.md) | Webhook receiver, App-data endpoint, customer identity |
+| 6 | [Privacy](docs/06-privacy.md) | What data may go where |
+| 7 | [New app checklist](docs/07-new-app-checklist.md) | Step-by-step checklist for every new app |
+
+Start with [`docs/`](docs/README.md). The skills below apply the same
+standard to your code.
+
+- [Read the standard](#read-the-standard)
 - [Install](#install)
 - [Quick start](#quick-start)
 - [How to call a skill](#how-to-call-a-skill)
@@ -23,48 +41,123 @@ Kiro and more.
 
 ## Install
 
-Install the skills **globally** (once per machine), not into each app repo.
-That way every app uses the same, current version of the standard.
+Choose where to install:
+
+| | Global | Project |
+| --- | --- | --- |
+| Installed in | your home folder | the app repo, committed to git |
+| Works in | every repo you open | only that repo |
+| Who gets it | only you | everyone who clones the repo |
+| Updating | once per machine | once per app repo |
+| Best for | your own work across all our apps | sharing with the team: no setup, same version for everyone |
+
+You can do both. If a skill is installed in both places, the project copy
+usually wins.
 
 ### Any tool: the `skills` CLI (recommended)
 
 [`skills`](https://github.com/vercel-labs/skills) installs into 70+ agents and
-asks which ones you use:
+asks which ones you use.
+
+**Global:**
 
 ```bash
 npx skills add Koonei-ctrl/app-standards -g
 ```
 
+**Project:** run this in the app repo's root, then commit what it creates:
+
+```bash
+npx skills add Koonei-ctrl/app-standards --copy
+git add .agents .claude   # plus any other tool folders it created
+git commit -m "Add app-standards skills"
+```
+
+`--copy` writes real files instead of symlinks, so the commit works for
+everyone who clones the repo.
+
+Use your package manager's runner if you prefer. The command is the same:
+
+| Package manager | Global | Project |
+| --- | --- | --- |
+| npm | `npx skills add Koonei-ctrl/app-standards -g` | `npx skills add Koonei-ctrl/app-standards --copy` |
+| Bun | `bunx skills add Koonei-ctrl/app-standards -g` | `bunx skills add Koonei-ctrl/app-standards --copy` |
+| pnpm | `pnpm dlx skills add Koonei-ctrl/app-standards -g` | `pnpm dlx skills add Koonei-ctrl/app-standards --copy` |
+| Yarn (v2+) | `yarn dlx skills add Koonei-ctrl/app-standards -g` | `yarn dlx skills add Koonei-ctrl/app-standards --copy` |
+
+Yarn 1 has no `dlx`, so use `npx` there. The examples below use `npx`.
+Swap in your runner the same way.
+
 Install for specific tools only, without prompts:
 
 ```bash
+# global
 npx skills add Koonei-ctrl/app-standards -g -a claude-code -a cursor -a codex -y
+# project
+npx skills add Koonei-ctrl/app-standards --copy -a claude-code -a cursor -a codex -y
 ```
 
 Agent names include `claude-code`, `codex`, `cursor`, `github-copilot`,
 `gemini-cli`, `windsurf`, `antigravity`, `opencode`, `roo`, `kiro-cli`, `amp`
-and `cline`. To update, run the same command again.
+and `cline`. To update, run the same command again. For a project install,
+commit the result.
 
 ### Claude Code: plugin (gets updates)
+
+**Global:** run in Claude Code:
 
 ```
 /plugin marketplace add Koonei-ctrl/app-standards
 /plugin install app-standards@app-standards
 ```
 
-Update with `/plugin marketplace update app-standards`.
+**Project:** add this to the app repo's `.claude/settings.json` and commit it.
+When a teammate opens the repo and trusts the folder, Claude Code offers to
+install the plugin:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "app-standards": {
+      "source": { "source": "github", "repo": "Koonei-ctrl/app-standards" }
+    }
+  },
+  "enabledPlugins": {
+    "app-standards@app-standards": true
+  }
+}
+```
+
+Only the settings file goes into the repo, not the skills, so everyone stays
+on the latest version. Update with `/plugin marketplace update app-standards`.
 
 ### Manual copy
 
 Copy every folder under `skills/` into your tool's skills folder. Copy whole
 folders, because each skill keeps its `references/` inside it.
 
+**Global:**
+
 ```bash
 git clone https://github.com/Koonei-ctrl/app-standards.git ~/app-standards
-cp -R ~/app-standards/skills/* <skills folder from the table>
+mkdir -p ~/.claude/skills   # use the global folder from the table
+cp -R ~/app-standards/skills/* ~/.claude/skills/
 ```
 
-| Tool | Global (all your projects) | One project only |
+**Project:** run in the app repo's root, then commit:
+
+```bash
+git clone https://github.com/Koonei-ctrl/app-standards.git /tmp/app-standards
+mkdir -p .agents/skills     # use the project folder from the table
+cp -R /tmp/app-standards/skills/* .agents/skills/
+git add .agents && git commit -m "Add app-standards skills"
+```
+
+`.agents/skills/` is read by Codex, Cursor, Copilot, Gemini CLI, Antigravity
+and OpenCode. Claude Code, Windsurf, Roo and Kiro need their own folder, so
+copy the skills there as well if your team uses those tools.
+
+| Tool | Global (all your projects) | Project (this repo only) |
 | --- | --- | --- |
 | Claude Code | `~/.claude/skills/` | `.claude/skills/` |
 | Codex (CLI / IDE) | `~/.codex/skills/` | `.agents/skills/` |
@@ -77,8 +170,8 @@ cp -R ~/app-standards/skills/* <skills folder from the table>
 | Roo Code | `~/.roo/skills/` | `.roo/skills/` |
 | Kiro | `~/.kiro/skills/` | `.kiro/skills/` |
 
-Restart the tool (or open a new chat) after copying. To update, `git pull`
-in `~/app-standards` and copy again.
+Restart the tool (or open a new chat) after copying. To update, pull this
+repo and copy again. For a project install, commit the result.
 
 ### Claude.ai / Claude Desktop
 
@@ -350,8 +443,10 @@ standard:
 
 1. Edit the file in root `references/`.
 2. Run `scripts/sync-references.sh` to refresh the copies.
-3. Bump `version` in [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json).
-4. Commit and push. Developers get it on their next update.
+3. Update the matching page in [`docs/`](docs/) so the readable version
+   says the same thing.
+4. Bump `version` in [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json).
+5. Commit and push. Developers get it on their next update.
 
 `scripts/sync-references.sh --check` fails if any copy is out of date. Run it
 in CI or a pre-commit hook.

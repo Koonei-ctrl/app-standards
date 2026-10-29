@@ -57,6 +57,10 @@ else is discovered.
      carries the email (EV-05). `transaction_id` is the Stripe subscription
      id; if a page only has a checkout session id, fetch the receipt from the
      backend.
+   - **Trial plans:** fire `start_trial` instead of the browser `purchase`
+     (same data, `value` = 0 or the trial price), and send the server
+     `purchase` only on the first paid charge after the trial
+     (`invoice.paid`), with that charge's amount. Renewals send nothing.
    - **Server purchase (EV-06, SX-04):** send from the Stripe fulfilment
      handler (fed by a direct Stripe webhook or the CRM relay — see
      `crm-webhook`) for every checkout path, after its event-id dedup so a
@@ -77,7 +81,7 @@ else is discovered.
 
 5. **Test.** Add tests in the repo's style that:
    - assert the server relay body contains only allowed fields;
-   - assert every browser `purchase` call site passes `transaction_id`,
+   - assert every browser `purchase` / `start_trial` call site passes `transaction_id`,
      `value`, `currency` and `email`;
    - assert no forbidden field (plan name, `items`, URL) appears.
    Run the repo's lint, type-check and tests. Report failures verbatim.

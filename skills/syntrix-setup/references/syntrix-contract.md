@@ -188,6 +188,10 @@ budget, and never retries 4xx (SX-04).
   select_item, donate, find_location, schedule, view_upsell,
   purchase_upsell, view_thank_you, cart_recovery_opened,
   begin_recovery_checkout`.
+- **Coming:** Syntrix is adding `start_trial` as a built-in event (Meta →
+  `StartTrial`). Until it ships, it is stored as `custom`: reports reference
+  it as `custom:start_trial`, and destinations with `eventMappings` need it
+  added.
 - `/track/e` and `/track/s2s` accept any name; unknown names are stored as
   `custom` and still forwarded under their raw name (custom events such as
   `session_start`, `funnel_step_completed` work).

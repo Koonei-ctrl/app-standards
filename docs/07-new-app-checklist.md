@@ -38,6 +38,8 @@ app`. It checks every item below and writes the report.
       (EV-02 – EV-04)
 - [ ] Browser `purchase` at **every** place a payment completes, with the
       subscription id, value charged today, currency and email (EV-05)
+- [ ] Trial plans: `start_trial` at trial start; server `purchase` only at
+      the first paid charge after the trial (EV-05, EV-06)
 - [ ] Server `purchase` from the fulfilment handler, for every checkout path
       (EV-06, SX-04)
 - [ ] Recovery events and token removal, if the app has recovery links

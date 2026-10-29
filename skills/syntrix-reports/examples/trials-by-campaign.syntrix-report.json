@@ -1,0 +1,16 @@
+{
+  "syntrixReportExport": "v1",
+  "report": {
+    "reportType": "attribution",
+    "name": "Trials by campaign (last touch)",
+    "description": "Trial starts credited to the last campaign before the trial. Compare with 'Revenue by campaign' (paid purchases) to see which campaigns bring trials that pay. Uses custom:start_trial until Syntrix ships start_trial as built-in; then change it to start_trial.",
+    "config": {
+      "conversionEvent": "custom:start_trial",
+      "model": "last_touch",
+      "metric": "conversions",
+      "dimension": "utm_campaign",
+      "limit": 20
+    },
+    "templateId": null
+  }
+}

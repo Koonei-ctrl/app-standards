@@ -40,6 +40,7 @@ flowchart LR
 | `customer.subscription.updated` | Status, plan or period changed: update access |
 | `customer.subscription.deleted` | Ended: remove access |
 | `setup_intent.succeeded` | Free trial card saved: make it the default payment method |
+| `invoice.paid` | First paid charge after a trial: send the server `purchase` ([Tracking](02-tracking.md#trial-plans)) |
 
 Every checkout path must be handled: hosted, built-in, wallet.
 
@@ -77,8 +78,9 @@ never on the plan name.
   discount on a trial.
 - **Trial length (PAY-11):** a trial plan without a trial length is rejected
   when plans are configured, not at checkout time.
-- The `value` sent to Syntrix is always what was **charged today**: 0 for a
-  free trial.
+- Trial plans send `start_trial` at the start (value 0, or the trial price)
+  and `purchase` only at the first paid charge. See
+  [Tracking](02-tracking.md#trial-plans).
 
 ## Payment methods and wallets (PAY-06)
 
@@ -136,7 +138,7 @@ Never use live keys, live data or real cards.
 | PAY-01 | Access granted only from a verified Stripe event (CRM relay or own Stripe endpoint), never from the success redirect, a client callback or the checkout response | Critical |
 | PAY-02 | Webhook verifies the signature against the raw body | Critical |
 | PAY-03 | Each Stripe event processed once, even if delivered twice, concurrently, or via both routes | Critical |
-| PAY-04 | Handles `checkout.session.completed`, `customer.subscription.created/updated/deleted`, `setup_intent.succeeded` | Critical |
+| PAY-04 | Handles `checkout.session.completed`, `customer.subscription.created/updated/deleted`, `setup_intent.succeeded`, `invoice.paid` | Critical |
 | PAY-05 | No Stripe customer or subscription is created before every rejection check passes | High |
 | PAY-06 | Card, Link, Apple Pay, Google Pay; wallet uses the merchant country, checks availability, asks no billing address, can't break the card form | High |
 | PAY-07 | Charged in the quoted currency; adaptive conversion off | High |

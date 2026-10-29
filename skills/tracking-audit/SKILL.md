@@ -49,6 +49,10 @@ belong to `syntrix-setup`, `stripe-metadata`, `payment-standard`,
    - Trace payloads to their source: confirm `transaction_id` is the
      subscription id, `value` is the amount charged today, and every browser
      `purchase` carries the email.
+   - Trial plans: `start_trial` replaces the browser `purchase` at trial
+     start, and the server `purchase` fires only on the first paid charge
+     after the trial (`invoice.paid`). A `purchase` at trial start is
+     **Wrong**.
    - For the event flows, walk each flow the app has (A–D) in order and
      compare moment, event, data and dedup window against the tables.
    - Grep for forbidden fields in Syntrix payloads and Stripe metadata (plan

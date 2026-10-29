@@ -105,6 +105,22 @@ and does not fire `purchase` again.
 | 2 | Paywall shows prices | `begin_recovery_checkout` **instead of** `begin_checkout` | `email`, `checkoutUrl` |
 | 3 | Payment | `purchase` browser + server | as Flow A |
 
+### Trial plans (`free-trial`, `paid-trial`)
+
+A trial start is not a purchase. In flows A–D, a trial plan sends
+`start_trial` where an upfront plan sends the browser `purchase`, and sends
+`purchase` only when the trial turns into its first paid charge.
+
+| # | Moment | Event | Data | Once per |
+| --- | --- | --- | --- | --- |
+| 1 | Trial starts (where an upfront plan fires the browser `purchase`) | `start_trial` (browser only) | `transaction_id`, `value`, `currency`, `email` | Transaction id, ever |
+| 2 | First paid charge after the trial (`invoice.paid`) | `purchase` (server only) | as Flow A step 8 | Transaction id, ever |
+
+`value` on `start_trial` = charged today: 0 for a free trial, the trial
+price for a paid trial. `value` on the later `purchase` = the amount of that
+first paid charge. Both carry the same subscription id. No server copy at
+trial start; renewals send nothing.
+
 ### Product analytics events (app's own pipeline)
 
 `landing_viewed`, `funnel_started`/`quiz_started`, `quiz_question_answered`
@@ -119,10 +135,10 @@ and does not fire `purchase` again.
 
 | Field | Format | Events | Rule |
 | --- | --- | --- | --- |
-| `email` | plaintext, lower-case | `generate_lead`, `begin_checkout`, every `purchase` | Never hashed. Mandatory on every browser `purchase` |
-| `transaction_id` | Stripe **subscription** id | `purchase` | Identical on browser and server copies. Never order id / checkout session id |
-| `value` | number, major units | `purchase` | Amount **charged today** (0 free trial, intro price for intro offers) |
-| `currency` | ISO-4217 upper-case | `purchase` | Same as the charge |
+| `email` | plaintext, lower-case | `generate_lead`, `begin_checkout`, `start_trial`, every `purchase` | Never hashed. Mandatory on every browser `purchase` and `start_trial` |
+| `transaction_id` | Stripe **subscription** id | `purchase`, `start_trial` | Identical on browser and server copies, and on a trial's `start_trial` and later `purchase`. Never order id / checkout session id |
+| `value` | number, major units | `purchase`, `start_trial` | Amount **charged today** (0 free trial, trial price for a paid trial, intro price for intro offers); a trial's later `purchase` = its first paid charge |
+| `currency` | ISO-4217 upper-case | `purchase`, `start_trial` | Same as the charge |
 | `checkoutUrl` | link back to checkout | `begin_checkout`, `begin_recovery_checkout` | Expiring, no personal or sensitive data |
 | `externalId` | Stripe customer id | server `purchase` | |
 | `country` | ISO-3166 alpha-2 | server `purchase` | Market charged |
@@ -173,8 +189,8 @@ Eight keys, every value a string, missing = `""`.
 | EV-02 | Funnel events (`funnel_started`, `funnel_step_completed`, `funnel_completed`) fire only when funnel addresses are neutral; otherwise the tracker is absent from the funnel | Critical if tracker runs on revealing URLs |
 | EV-03 | `generate_lead` fires at the Flow A moment (funnel email submit, or paywall price render when funnel is untracked), browser only, with `email` | High |
 | EV-04 | `begin_checkout` fires at the moment defined for each flow (A: prices render; B: email submit before payment request; C: wallet sheet opens), browser only, once per session, with `email` and `checkoutUrl` | High |
-| EV-05 | Browser `purchase` fires at every place a payment can complete (success page, in-page card confirm, wallet), once per transaction id ever, with `transaction_id` = subscription id, `value` charged today, `currency`, `email` | Critical |
-| EV-06 | Server `purchase` is sent from the Stripe webhook for **every** checkout path (hosted and built-in), with the same `transaction_id`/`value`/`currency` as the browser copy | Critical |
+| EV-05 | Browser `purchase` (`start_trial` for trial plans) fires at every place a payment can complete (success page, in-page card confirm, wallet), once per transaction id ever, with `transaction_id` = subscription id, `value` charged today, `currency`, `email` | Critical |
+| EV-06 | Server `purchase` is sent from the Stripe webhook for **every** checkout path (hosted and built-in), with the same `transaction_id`/`value`/`currency` as the browser copy. Trial plans: sent once, at the first paid charge after the trial, with the amount of that charge; no server copy of `start_trial` | Critical |
 | EV-07 | Recovery: `cart_recovery_opened` and `begin_recovery_checkout` (instead of `begin_checkout`); recovery token removed from the address before the tracker loads | Medium |
 | EV-08 | No event other than `purchase` has a server copy | High |
 | EV-09 | Syntrix events carry only the allowed fields; payload built in one place from named fields, covered by a test | Critical |
@@ -201,7 +217,7 @@ Eight keys, every value a string, missing = `""`.
 | PAY-01 | Access is granted only from a verified Stripe event — received from the CRM relay (WH-) or the app's own Stripe endpoint — never from the success redirect, a client callback or the checkout response | Critical |
 | PAY-02 | Webhook verifies the signature against the raw request body (`Stripe-Signature` on a direct Stripe endpoint, `X-CRM-Signature` on the CRM relay) | Critical |
 | PAY-03 | Each Stripe event is processed once even if delivered twice, concurrently, or through both the CRM relay and a direct Stripe endpoint (atomic claim on the Stripe event id / pending order) | Critical |
-| PAY-04 | The fulfilment handler handles `checkout.session.completed`, `customer.subscription.created/updated/deleted`, `setup_intent.succeeded` | Critical |
+| PAY-04 | The fulfilment handler handles `checkout.session.completed`, `customer.subscription.created/updated/deleted`, `setup_intent.succeeded`, `invoice.paid` (first paid charge after a trial, EV-06) | Critical |
 | PAY-05 | No Stripe customer/subscription is created until every rejection check has passed (existing account, bad promo, plan not sold in market) | High |
 | PAY-06 | Card, Link, Apple Pay, Google Pay offered. Wallet uses the **merchant** country, checks availability per wallet, asks no billing address, and wallet setup errors cannot break the card form | High |
 | PAY-07 | Charge is in the currency of the quoted price (Stripe adaptive/automatic currency conversion off) | High |

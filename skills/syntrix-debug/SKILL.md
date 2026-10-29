@@ -45,7 +45,8 @@ operator (account / destination side).
    checked earlier, wait and re-check.
 7. **Arrival**: the dashboard **Events** page — search the order's
    `transaction_id` (the Stripe subscription id) or the test email; both the
-   browser and server copies should appear, one marked duplicate.
+   browser and server copies should appear, one marked duplicate (a
+   trial's paid `purchase` is server-only; its `start_trial` is browser-only).
 8. **Dedup**: if the event arrived but wasn't forwarded, it may be marked
    duplicate. Purchase: same `transaction_id` already stored (first stored
    wins). Doubles at Meta usually mean the two copies carried **different**

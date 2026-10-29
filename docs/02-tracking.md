@@ -128,9 +128,33 @@ and never fires `purchase` again.
 
 Remove the recovery token from the URL before the tracker loads (EV-07).
 
+### Trial plans
+
+A trial start is not a purchase. For `free-trial` and `paid-trial` plans,
+every flow above sends `start_trial` where an upfront plan sends the browser
+`purchase`. The `purchase` comes later, when the trial turns into its first
+paid charge.
+
+| # | Moment | Event | Data | Once per |
+| --- | --- | --- | --- | --- |
+| 1 | Trial starts (where an upfront plan fires the browser `purchase`) | `start_trial` (browser only) | `transaction_id`, `value`, `currency`, `email` | Transaction id, ever |
+| 2 | First paid charge after the trial (Stripe `invoice.paid`) | `purchase` (server only) | as Flow A step 8 | Transaction id, ever |
+
+- `value` on `start_trial` is what was charged today: 0 for a free trial, the
+  trial price for a paid trial.
+- `value` on the later `purchase` is the amount of that first paid charge.
+- Both carry the same subscription id. Renewals send nothing.
+- Ads then get credit for trials (`start_trial`, StartTrial on Meta) **and**
+  for the trials that became paying customers (`purchase`). Compare the two
+  by campaign in Syntrix to see which ads bring customers who pay.
+- Meta credits a purchase to an ad only inside its attribution window
+  (7 days after the click by default), so long trials often don't show there.
+  Judge trial-to-paid in Syntrix's reports.
+
 ### Firing rules
 
-- **Every place a payment can complete** fires the browser `purchase`:
+- **Every place a payment can complete** fires the browser `purchase`
+  (`start_trial` for trial plans):
   success page, in-page card confirm, wallet sheet. Missing one loses those
   sales' attribution (EV-05).
 - **Guard before firing:** a per-session guard for session and funnel events,
@@ -147,10 +171,10 @@ Remove the recovery token from the URL before the tracker loads (EV-07).
 
 | Field | Format | Events | Rule |
 | --- | --- | --- | --- |
-| `email` | plaintext, lower-case | `generate_lead`, `begin_checkout`, every `purchase` | Never hashed. Required on every browser `purchase` |
-| `transaction_id` | Stripe **subscription** id | `purchase` | Identical on browser and server copies. Never the order id or checkout session id |
-| `value` | number, major units | `purchase` | Amount **charged today**: 0 for a free trial, the intro price for intro offers |
-| `currency` | ISO-4217, upper-case | `purchase` | Same as the charge |
+| `email` | plaintext, lower-case | `generate_lead`, `begin_checkout`, `start_trial`, every `purchase` | Never hashed. Required on every browser `purchase` and `start_trial` |
+| `transaction_id` | Stripe **subscription** id | `purchase`, `start_trial` | Identical on browser and server copies, and on a trial's `start_trial` and later `purchase`. Never the order id or checkout session id |
+| `value` | number, major units | `purchase`, `start_trial` | Amount **charged today**: 0 for a free trial, the trial price for a paid trial, the intro price for intro offers. A trial's later `purchase`: its first paid charge |
+| `currency` | ISO-4217, upper-case | `purchase`, `start_trial` | Same as the charge |
 | `checkoutUrl` | link back to checkout | `begin_checkout`, `begin_recovery_checkout` | Expiring, no personal or sensitive data |
 | `externalId` | Stripe customer id | server `purchase` | |
 | `country` | ISO-3166 alpha-2 | server `purchase` | Market charged |
@@ -174,6 +198,8 @@ with a test.
 
 Sent from the Stripe fulfilment handler for **every** checkout path, after
 its event-id dedup, so a redelivered event never sends it twice (EV-06).
+For trial plans it's sent at the first paid charge after the trial instead
+(see [Trial plans](#trial-plans)).
 
 ```
 POST https://tracker.trysyntrix.app/track/s2s
@@ -229,6 +255,8 @@ sequenceDiagram
   wins only if it arrives inside that hold.
 - If the visitor closed the tab, there is no browser copy. The server copy
   is then the one forwarded. That's what it's for.
+- A trial's paid `purchase` only has the server copy, so it's always the
+  one forwarded.
 - Both copies must carry a **byte-identical** `transaction_id`, the Stripe
   subscription id. Different ids (e.g. a session id on one side) mean double
   purchases at Meta.
@@ -256,8 +284,8 @@ this instead:
 | EV-02 | Funnel events fire only when funnel URLs are neutral; otherwise the tracker is absent from the funnel | Critical if the tracker runs on revealing URLs |
 | EV-03 | `generate_lead` fires at the Flow A moment, browser only, with `email` | High |
 | EV-04 | `begin_checkout` fires at each flow's moment, browser only, once per session, with `email` and `checkoutUrl` | High |
-| EV-05 | Browser `purchase` fires everywhere a payment can complete, once per transaction id ever, with the subscription id, value charged today, currency and email | Critical |
-| EV-06 | Server `purchase` is sent from the webhook for every checkout path, with the same id, value and currency as the browser copy | Critical |
+| EV-05 | Browser `purchase` (`start_trial` for trial plans) fires everywhere a payment can complete, once per transaction id ever, with the subscription id, value charged today, currency and email | Critical |
+| EV-06 | Server `purchase` is sent from the webhook for every checkout path, with the same id, value and currency as the browser copy. Trial plans: once, at the first paid charge after the trial | Critical |
 | EV-07 | Recovery events used, and the recovery token removed from the URL before the tracker loads | Medium |
 | EV-08 | No event other than `purchase` has a server copy | High |
 | EV-09 | Only allowed fields; payload built in one place and covered by a test | Critical |

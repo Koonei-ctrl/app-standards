@@ -68,6 +68,7 @@ Schemas here are traced from Syntrix's report validators and engines
 | App sends (standard) | Reference it as |
 | --- | --- |
 | `generate_lead`, `begin_checkout`, `purchase`, `cart_recovery_opened`, `begin_recovery_checkout`, `page_view` | the name as-is |
+| `start_trial` | `custom:start_trial` until Syntrix ships it as built-in, then as-is (`syntrix-contract.md` §6) |
 | `session_start`, `funnel_started`, `funnel_step_completed`, `funnel_completed`, any other app-specific name | `custom:<name>` |
 | A field in the event data (e.g. `step` on `funnel_step_completed`) | filter `{ "field": "custom_data", "key": "step", "op": "eq", "value": "3" }` — value always a string |
 
@@ -179,6 +180,10 @@ Filters everywhere: `{ "field", "op": "eq" | "contains" | "starts_with", "value"
 - **Purchases that don't reach the browser** (closed tab, blocked script) are
   still sent to the ad platforms by the server copy, but a session funnel may
   not show them. Funnel purchase counts are a floor; Stripe is the truth.
+- **Trial apps.** The session sees `start_trial`; the paid `purchase` comes
+  days later from the server, outside the session. End session funnels at
+  `start_trial`. For "which ads become paying customers", compare
+  attribution of `start_trial` and of `purchase` by campaign.
 - **Renewals aren't events.** The standard sends `purchase` once per
   subscription, so cohort "repeat purchase" stays near zero by design.
 - Recovery: there is no marker on a purchase after a recovery checkout, so
